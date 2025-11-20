@@ -1,6 +1,7 @@
-from kivy.app import App
+from kivymd.app import MDApp
+from cellmapview import CellMapView
 
-class Main(App):
+class Main(MDApp):
     pass
 
 Main().run()
