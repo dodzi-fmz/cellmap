@@ -3,8 +3,7 @@ from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivy.lang import Builder
-from kivy.clock import Clock
-from jnius import autoclass, PythonJavaClass, java_method, cast 
+from jnius import autoclass, PythonJavaClass
 import os
 import sys
 from cellmapview import CellMapView
@@ -36,7 +35,7 @@ class CellMap(MDApp):
         self.screen = Builder.load_file(LOCAL_DIR, 'main.kv')
 
     def build(self):
-        Clock.schedule_interval(self.cell_info, 5)
+        cell_info()
         return self.screen
 
 if __name__ == "__main__":
