@@ -5,8 +5,11 @@ from kivymd.uix.label import MDLabel
 from kivy.lang import Builder
 from kivy.clock import Clock
 from jnius import autoclass, PythonJavaClass, java_method, cast 
+import os
+import sys
 from cellmapview import CellMapView
 
+LOCAL_DIR = os.path.dirname(__file__) if os.path.basename(sys.executable).startswith("python") else os.path.dirname(sys.executable)
 
 def cell_info(self):
         tlph = autoclass('android.telephony.TelephonyManager')
@@ -30,7 +33,7 @@ class CellMap(MDApp):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.screen = Builder.load_file('main.kv')
+        self.screen = Builder.load_file(LOCAL_DIR, 'main.kv')
 
     def build(self):
         Clock.schedule_interval(self.cell_info, 5)
