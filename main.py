@@ -16,11 +16,14 @@ class CellMap(MDApp):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.screen = Builder.load_file(os.path.join(LOCAL_DIR, 'main.kv'))
+        
 
     def build(self):
-        self.cell_info()
+        self.screen = Builder.load_file(os.path.join(LOCAL_DIR, 'main.kv'))
         return self.screen
+    
+    def on_start(self):
+        self.cell_info()
 
     def cell_info(self):
         context = autoclass('android.content.Context')
