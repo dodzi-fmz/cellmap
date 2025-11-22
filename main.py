@@ -70,7 +70,7 @@ class CellMap(MDApp):
                 mnc = cell_id.getMncString()
                 lac = cell_id.getTac()
                 cid = cell_id.getNci()
-                network_type = tlph.NETWORK_TYPE_NR
+                network = tlph.NETWORK_TYPE_NR
                 tower.append(f"GCI:{cid}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             else:
                 mcc = ""
