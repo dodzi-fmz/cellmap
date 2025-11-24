@@ -1,16 +1,18 @@
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
-from jnius import autoclass, PythonJavaClass
+from jnius import autoclass
 import os
 import sys
+import opencellid
 from cellmapview import CellMapView
 
 LOCAL_DIR = os.path.dirname(__file__) if os.path.basename(sys.executable).startswith("python") else os.path.dirname(sys.executable)
 
+ocid = opencellid.OpenCellIdFeed(LOCAL_DIR, "pk.fa0f14722d93d02d74bc66063891aa10")
+
 class MainLayout(MDBoxLayout):
     pass
-
 
 class CellMap(MDApp):
 
@@ -41,47 +43,53 @@ class CellMap(MDApp):
                 mnc = cell_id.getMnc()
                 lac = cell_id.getLac()
                 cid = cell_id.getCid()
+                rssi = cell_id.getCellSignalStrength()
                 network = tlph.NETWORK_TYPE_GSM
-                tower.append(f"GCI:{cid}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoCdma')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getSystemId()
                 mnc = cell_id.getNetworkId()
                 lac = cell_id.getBasestationId()
                 cid = cell_id.getBasestationId()
+                rssi = cell_id.getCellSignalStrength()
                 network = tlph.NETWORK_TYPE_CDMA
-                tower.append(f"GCI:{cid}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoLte')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMccString()
                 mnc = cell_id.getMncString()
                 lac = cell_id.getTac()
                 cid = cell_id.getCi()
+                rssi = cell_id.getCellSignalStrength()
                 network = tlph.NETWORK_TYPE_LTE
-                tower.append(f"GCI:{cid}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoWcdma')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMcc()
                 mnc = cell_id.getMnc()
                 lac = cell_id.getLac()
                 cid = cell_id.getCid()
+                rssi = cell_id.getCellSignalStrength()
                 network = tlph.NETWORK_TYPE_UMTS
-                tower.append(f"GCI:{cid}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoNr')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMccString()
                 mnc = cell_id.getMncString()
                 lac = cell_id.getTac()
                 cid = cell_id.getNci()
+                rssi = cell_id.getCellSignalStrength()
                 network = tlph.NETWORK_TYPE_NR
-                tower.append(f"GCI:{cid}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             else:
                 mcc = ""
                 mnc = ""
                 lac = ""
                 cid = ""
+                rssi = ""
                 network = ""
-                tower.append(f"GCI:{cid}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
                 continue
         self.root.ids.tower.text = "\n".join(tower)
 
