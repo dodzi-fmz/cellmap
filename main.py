@@ -26,7 +26,7 @@ class CellMap(MDApp):
         return self.screen
     
     def on_start(self):
-        Clock.schedule_interval(self.cell_info, 5)
+        self.cell_info()
 
     def cell_info(self):
         context = autoclass('android.content.Context')
