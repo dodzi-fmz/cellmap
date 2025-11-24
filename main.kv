@@ -1,9 +1,21 @@
-#:include cellmapview.kv
-
-MainLayout:
+#:import MapView kivy_garden.mapview.MapView
 
 <MainLayout>:
-    MDLabel:
-        id: tower
-        text: " "
-        halign: "center"
+    BoxLayout:
+        orientation:'vertical'
+
+        MapView:
+            id: map
+            size_hint: 0.65
+        
+        ScrollView:
+            size_hint: 0.35
+
+            MDLabel:
+                id: info
+                text: ""
+                size_hint_y: None
+                height: self.texture_size[1]
+                text_size: self.width, None
+                hailign: "left"
+                valign: "top"

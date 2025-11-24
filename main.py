@@ -2,11 +2,11 @@ from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
 from kivy.clock import Clock
+from kivy_garden.mapview import MapMarker
 from jnius import autoclass
 import os
 import sys
 import opencellid
-from cellmapview import CellMapView
 
 LOCAL_DIR = os.path.dirname(__file__) if os.path.basename(sys.executable).startswith("python") else os.path.dirname(sys.executable)
 
@@ -28,6 +28,12 @@ class CellMap(MDApp):
     def on_start(self):
         Clock.schedule_interval(self.cell_info, 5)
 
+    def clear_map(self):
+        mapview = self.root.ids.map
+        for child in list(mapview.children):
+            if isinstance(child, MapMarker):
+                mapview.remove_widget(child)
+
     def cell_info(self, dt):
         context = autoclass('android.content.Context')
         tlph = autoclass('android.telephony.TelephonyManager')
@@ -35,7 +41,9 @@ class CellMap(MDApp):
         tlph_mgr = pyact.mActivity.getSystemService(context.TELEPHONY_SERVICE)
         cell_info = tlph_mgr.getAllCellInfo()
 
-        tower = []
+        markers = []
+        self.clear_map()
+        mapview = self.root.ids.map
 
         for cell in cell_info:
             if isinstance(cell, autoclass('android.telephony.CellInfoGsm')):
@@ -46,7 +54,6 @@ class CellMap(MDApp):
                 cid = cell_id.getCid()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_GSM
-                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoCdma')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getSystemId()
@@ -55,7 +62,6 @@ class CellMap(MDApp):
                 cid = cell_id.getBasestationId()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_CDMA
-                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoLte')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMccString()
@@ -64,7 +70,6 @@ class CellMap(MDApp):
                 cid = cell_id.getCi()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_LTE
-                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoWcdma')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMcc()
@@ -73,7 +78,6 @@ class CellMap(MDApp):
                 cid = cell_id.getCid()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_UMTS
-                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoNr')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMccString()
@@ -82,7 +86,6 @@ class CellMap(MDApp):
                 cid = cell_id.getNci()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_NR
-                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             else:
                 mcc = ""
                 mnc = ""
@@ -90,9 +93,23 @@ class CellMap(MDApp):
                 cid = ""
                 rssi = ""
                 network = ""
-                tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
                 continue
-        self.root.ids.tower.text = "\n".join(tower)
+        
+        srch = ocid.search_cell(mcc, mnc, lac, cid)
+
+        if 'lat' in srch and 'lon' in srch:
+            lat = srch["lat"]
+            lon = srch["lon"]
+
+            marker = MapMarker(lat=lat, lon=lon)
+            mapview.add_widget(marker)
+        else:
+            lat = ""
+            lon = ""
+
+        markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+
+        self.root.ids.tower.text = "\n".join(markers)
 
 if __name__ == "__main__":
     CellMap().run()
