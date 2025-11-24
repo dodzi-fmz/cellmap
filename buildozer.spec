@@ -7,7 +7,7 @@ package.domain = org.inside
 source.dir = .
 source.include_exts = py,kv,png,jpg,jpeg,ttf
 
-version = 0.0.2
+version = 0.0.21
 
 requirements = python3,kivy==2.3.0,kivymd==1.2.0,pyjnius,android,sdl2,mapview,openssl,requests,numpy,pillow,charset_normalizer,chardet,idna,urllib3,certifi,opencellid
 

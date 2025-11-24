@@ -26,9 +26,9 @@ class CellMap(MDApp):
         return self.screen
     
     def on_start(self):
-        self.cell_info()
+        Clock.schedule_interval(self.cell_info, 5)
 
-    def cell_info(self):
+    def cell_info(self, dt):
         context = autoclass('android.content.Context')
         tlph = autoclass('android.telephony.TelephonyManager')
         pyact = autoclass('org.kivy.android.PythonActivity')
