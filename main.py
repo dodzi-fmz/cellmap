@@ -1,6 +1,7 @@
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.lang import Builder
+from kivy.clock import Clock
 from jnius import autoclass
 import os
 import sys
@@ -25,7 +26,7 @@ class CellMap(MDApp):
         return self.screen
     
     def on_start(self):
-        self.cell_info()
+        Clock.schedule_interval(self.cell_info, 5)
 
     def cell_info(self):
         context = autoclass('android.content.Context')
@@ -43,7 +44,7 @@ class CellMap(MDApp):
                 mnc = cell_id.getMnc()
                 lac = cell_id.getLac()
                 cid = cell_id.getCid()
-                rssi = cell_id.getCellSignalStrength()
+                rssi = cell_id.getDbm()
                 network = tlph.NETWORK_TYPE_GSM
                 tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoCdma')):
@@ -52,7 +53,7 @@ class CellMap(MDApp):
                 mnc = cell_id.getNetworkId()
                 lac = cell_id.getBasestationId()
                 cid = cell_id.getBasestationId()
-                rssi = cell_id.getCellSignalStrength()
+                rssi = cell_id.getDbm()
                 network = tlph.NETWORK_TYPE_CDMA
                 tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoLte')):
@@ -61,7 +62,7 @@ class CellMap(MDApp):
                 mnc = cell_id.getMncString()
                 lac = cell_id.getTac()
                 cid = cell_id.getCi()
-                rssi = cell_id.getCellSignalStrength()
+                rssi = cell_id.getDbm()
                 network = tlph.NETWORK_TYPE_LTE
                 tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoWcdma')):
@@ -70,7 +71,7 @@ class CellMap(MDApp):
                 mnc = cell_id.getMnc()
                 lac = cell_id.getLac()
                 cid = cell_id.getCid()
-                rssi = cell_id.getCellSignalStrength()
+                rssi = cell_id.getDbm()
                 network = tlph.NETWORK_TYPE_UMTS
                 tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoNr')):
@@ -79,7 +80,7 @@ class CellMap(MDApp):
                 mnc = cell_id.getMncString()
                 lac = cell_id.getTac()
                 cid = cell_id.getNci()
-                rssi = cell_id.getCellSignalStrength()
+                rssi = cell_id.getDbm()
                 network = tlph.NETWORK_TYPE_NR
                 tower.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             else:
