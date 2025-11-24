@@ -1,15 +1,17 @@
 #:import MapView kivy_garden.mapview.MapView
 
+MainLayout:
+
 <MainLayout>:
     BoxLayout:
         orientation:'vertical'
 
         MapView:
             id: map
-            size_hint: 0.65
+            size_hint_y: 0.65
         
         ScrollView:
-            size_hint: 0.35
+            size_hint_y: 0.35
 
             MDLabel:
                 id: info

@@ -26,7 +26,9 @@ class CellMap(MDApp):
         return self.screen
     
     def on_start(self):
+        self.ocid.update_feed()
         Clock.schedule_interval(self.cell_info, 5)
+
 
     def clear_map(self):
         mapview = self.root.ids.map
@@ -95,7 +97,7 @@ class CellMap(MDApp):
                 network = ""
                 continue
         
-        srch = ocid.search_cell(mcc, mnc, lac, cid)
+        srch = ocid(mcc, mnc, lac, cid)
 
         if 'lat' in srch and 'lon' in srch:
             lat = srch["lat"]
