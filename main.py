@@ -29,7 +29,6 @@ class CellMap(MDApp):
         return self.screen
     
     def on_start(self):
-        self.ocid.update_feed()
         Clock.schedule_interval(self.cell_info, 5)
 
     def clear_map(self):
@@ -58,6 +57,7 @@ class CellMap(MDApp):
                 cid = cell_id.getCid()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_GSM
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoCdma')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getSystemId()
@@ -66,6 +66,7 @@ class CellMap(MDApp):
                 cid = cell_id.getBasestationId()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_CDMA
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoLte')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMccString()
@@ -74,6 +75,7 @@ class CellMap(MDApp):
                 cid = cell_id.getCi()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_LTE
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoWcdma')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMcc()
@@ -82,6 +84,7 @@ class CellMap(MDApp):
                 cid = cell_id.getCid()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_UMTS
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoNr')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMccString()
@@ -90,6 +93,7 @@ class CellMap(MDApp):
                 cid = cell_id.getNci()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_NR
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             else:
                 mcc = ""
                 mnc = ""
@@ -110,7 +114,7 @@ class CellMap(MDApp):
         
         response = requests.get(url, params=params)
         response.raise_for_status()
-        data = response.json
+        data = response.json()
 
         if data and data.get('status') == 'ok':
             lat = data.get("lat")
@@ -121,8 +125,6 @@ class CellMap(MDApp):
         else:
             lat = ""
             lon = ""
-
-        markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
 
         self.root.ids.info.text = "\n".join(markers)
 
