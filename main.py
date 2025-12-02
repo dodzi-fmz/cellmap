@@ -44,6 +44,7 @@ class CellMap(MDApp):
         tlph_mgr = pyact.mActivity.getSystemService(context.TELEPHONY_SERVICE)
         cell_info = tlph_mgr.getAllCellInfo()
 
+        cells = []
         markers = []
         self.clear_map()
         mapview = self.root.ids.map
@@ -51,22 +52,20 @@ class CellMap(MDApp):
         for cell in cell_info:
             if isinstance(cell, autoclass('android.telephony.CellInfoGsm')):
                 cell_id = cell.getCellIdentity()
-                mcc = cell_id.getMcc()
-                mnc = cell_id.getMnc()
                 lac = cell_id.getLac()
                 cid = cell_id.getCid()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_GSM
-                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                cells.append({"lac":lac, "cid": cid, "psc": 0})
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoCdma')):
                 cell_id = cell.getCellIdentity()
-                mcc = cell_id.getSystemId()
-                mnc = cell_id.getNetworkId()
-                lac = cell_id.getBasestationId()
                 cid = cell_id.getBasestationId()
+                lac = cell_id.getBasestationId()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_CDMA
-                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                cells.append({"lac":lac, "cid": cid, "psc": 0})
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoLte')):
                 cell_id = cell.getCellIdentity()
                 mcc = cell_id.getMccString()
@@ -75,25 +74,24 @@ class CellMap(MDApp):
                 cid = cell_id.getCi()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_LTE
+                cells.append({"lac":lac, "cid": cid, "psc": 0})
                 markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoWcdma')):
                 cell_id = cell.getCellIdentity()
-                mcc = cell_id.getMcc()
-                mnc = cell_id.getMnc()
-                lac = cell_id.getLac()
                 cid = cell_id.getCid()
+                lac = cell_id.getLac()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_UMTS
-                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                cells.append({"lac":lac, "cid": cid, "psc": 0})
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, LAC:{lac}, Network_Type:{network}")
             elif isinstance(cell, autoclass('android.telephony.CellInfoNr')):
                 cell_id = cell.getCellIdentity()
-                mcc = cell_id.getMccString()
-                mnc = cell_id.getMncString()
-                lac = cell_id.getTac()
                 cid = cell_id.getNci()
+                lac = cell_id.getTac()
                 rssi = cell.getCellSignalStrength().getRssi()
                 network = tlph.NETWORK_TYPE_NR
-                markers.append(f"GCI:{cid}, RSSI:{rssi}, MCC:{mcc}, MNC:{mnc}, LAC:{lac}, Network_Type:{network}")
+                cells.append({"lac":lac, "cid": cid, "psc": 0})
+                markers.append(f"GCI:{cid}, RSSI:{rssi}, LAC:{lac}, Network_Type:{network}")
             else:
                 mcc = ""
                 mnc = ""
@@ -104,12 +102,12 @@ class CellMap(MDApp):
                 continue
         
         params = {
-            "key": API_KEY,
+            "token": API_KEY,
+            "radio": "lte",
             "mcc": mcc,
             "mnc": mnc,
-            "lac": lac,
-            "cid": cid,
-            "format": "JSON"
+            "cells": cells,
+            "address": 0 
         }
         
         response = requests.get(url, params=params)
